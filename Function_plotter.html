@@ -1,0 +1,348 @@
+<!--
+<Plot My Function - An application to plot any expression in terms of x>
+   Copyright (C) <2011>  <Vishwa Parekh>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+<Function_plotter.html>  Copyright (C) <2011>  <Vishwa Parekh>
+  
+
+
+This program comes with ABSOLUTELY NO WARRANTY; 
+   This is free software, 
+   You may freely and without cost use "Function_plotter.html"  for personal or academic use. 
+   You will not charge a fee or request donations for "Function_plotter", nor distribute or include "Function_plotter" in or with commercial products. 
+   You will not use "Function_plotter" for commercial purposes. 
+
+   
+
+-->
+<!DOCTYPE HTML>
+
+<html>
+
+    <head>
+
+        <style>
+
+            body {
+
+                margin: 0px;
+
+                padding: 0px;
+
+            }
+
+            
+
+            #myCanvas {
+
+                border: 1px solid #9C9898;
+
+            }
+
+        </style>
+
+        <script>
+var myGraph;
+var canvas;
+var toggle=0;
+            
+
+            function Graph(canvas, minX, minY, maxX, maxY){
+
+                this.canvas = canvas;
+
+                this.minX = minX;
+
+                this.minY = minY;
+
+                this.maxX = maxX;
+
+                this.maxY = maxY;
+
+                
+
+                var context = canvas.getContext("2d");
+				
+                var centerY = Math.abs(minY / (maxY - minY)) * canvas.height;
+
+                var centerX = Math.abs(minX / (maxX - minX)) * canvas.width;
+
+                
+
+                // draw y axis
+
+                context.beginPath();
+
+                context.moveTo(0, centerY);
+
+                context.lineTo(canvas.width, centerY);
+
+                context.strokeStyle = "#aaa";
+
+                context.lineWidth = 2;
+
+                context.stroke();
+
+                
+
+                // draw x axis
+
+                context.beginPath();
+
+                context.moveTo(centerX, 0);
+
+                context.lineTo(centerX, canvas.height);
+
+                context.strokeStyle = "#aaa";
+
+                context.lineWidth = 2;
+
+                context.stroke();
+
+                
+
+                var iteration = 0.1;
+
+                
+
+                this.drawEquation = function(equation, color, thickness){
+
+                    context.save();
+
+                    
+
+                    // move context to center of canvas
+
+                    context.translate(centerX, centerY);
+
+                    
+
+                    var scaleX = canvas.width / (maxX - minX);
+
+                    var scaleY = canvas.height / (maxY - minY);
+
+                    
+
+                    // stretch grid to fit the canvas window, and 
+
+                    // invert the y scale so that y increments
+
+                    // as you move upwards
+
+                    context.scale(scaleX, -scaleY);
+
+                    context.beginPath();
+
+                    context.moveTo(minX, equation(minX));
+
+                    
+
+                    for (var x = minX + iteration; x <= maxX; x += iteration) {
+
+                        context.lineTo(x, equation(x));
+
+                    }
+
+                    
+
+                    context.restore();
+
+                    context.lineJoin = "round";
+
+                    context.lineWidth = thickness;
+
+                    context.strokeStyle = color;
+
+                    context.stroke();
+
+                };
+
+            }
+
+            
+
+            window.onload = function(){
+
+				if (!!document.createElement('canvas').getContext) {
+				
+				
+		
+			}
+			else
+			{
+				alert("Sorry, Your Browser Does Not Support Canvas");
+			}
+			
+                canvas = document.getElementById("myCanvas");
+
+                
+
+                myGraph = new Graph(canvas, -10, -100, 10, 100);
+
+                
+/*
+                myGraph.drawEquation(function(x){
+
+                    return eval(document.getElementById("text_input").value);
+
+                }, "green", 3);
+				
+				            
+
+                
+
+                
+
+                myGraph.drawEquation(function(x){
+
+                    return x * x;
+
+                }, "blue", 3);
+
+                
+
+               
+
+                myGraph.drawEquation(function(x){
+
+                    return 10 * x;
+
+                }, "red", 3);
+			
+*/	                
+
+            };
+		function plot_graph()
+		{
+		var xvalue=Number(document.getElementById("xvalue").value);
+		var yvalue=Number(document.getElementById("yvalue").value);
+		var minx = 0-xvalue;
+		var miny = 0-yvalue;
+		var maxx = xvalue;
+		var maxy = yvalue;
+		 myGraph = new Graph(canvas, minx, miny, maxx, maxy);
+		if(toggle==0){
+		myGraph.drawEquation(function(x){
+
+                    return eval(document.getElementById("text_input").value);
+
+                }, "green", 3);
+		toggle=1;
+		}
+		else
+		{
+		toggle=0;
+		myGraph.drawEquation(function(x){
+
+                    return eval(document.getElementById("text_input").value);
+
+                }, "red", 3);
+		}
+		}
+		function reloadPage()
+  		{
+		  window.location.reload()
+		}
+        </script>
+
+    </head>
+
+    <body>
+	<h1> Plot My Function </h1>
+<p> Choose your ranges/scales for the axes: (the ranges will be -value to +value where value is the number you type in these boxes.)<br> x: <input type="text" id="xvalue" value = "10">  y: <input type="text" id="yvalue" value = "100"></p>
+<p> You can check if the two graphs are intersecting or not by plotting them one over the other. First will be plotted in green and the second one in red</p>
+        <canvas id="myCanvas" width="578" height="300">
+
+        </canvas>
+		<br>
+		<br>
+		<p>Enter your expression in terms of "x" here:
+		<input type="text" id="text_input" value="">
+		<input type="button" onclick="plot_graph()" value="Click here to plot the expression"/>
+		</p>
+		<p><b>Example Expression</b>: 4*x+Math.sin(x)/Math.log(x)-Math.exp(x)*Math.tan(x)</p>
+		<input type="button" value="Clear Graph" onclick="reloadPage()" />
+		<p>Apart from basic +,-,* and / functions and brackets <b>The following table shows how to use some special functions</b></p>
+		<p>To see all the functions and variables that can be used click <a href="http://www.w3schools.com/jsref/jsref_obj_math.asp" target="_blank">here</a></p>
+		<table border="1" style="font-size: 12px; text-align:center" id="mytable">
+		<tbody>
+        <tr>
+            <th>Function</th>
+            <th>What it does</th>            
+        </tr>
+		<tr>
+            <th>Math.abs(x)</th>
+            <th>Returns the absolute value of x</th>            
+        </tr>
+		<tr>
+            <th>Math.acos(x)</th>
+            <th>returns cos inverse (x)</th>            
+        </tr>
+		<tr>
+            <th>Math.asin(x)</th>
+            <th>returns sine inverse (x)</th>            
+        </tr>
+		<tr>
+            <th>Math.atan(x)</th>
+            <th>returns tan inverse (x)</th>            
+        </tr>
+		<tr>
+            <th>Math.sin(x)</th>
+            <th>sine(x)</th>            
+        </tr>
+		<tr>
+            <th>Math.cos(x)</th>
+            <th>cos(x)</th>            
+        </tr>
+		<tr>
+            <th>Math.tan(x)</th>
+            <th>tan(x)</th>            
+        </tr>
+		<tr>
+            <th>Math.exp(x)</th>
+            <th>e(Eurler Number) raised to x</th>            
+        </tr>
+		<tr>
+            <th>Math.log(x)</th>
+            <th>returns natural logarithm of x</th>            
+        </tr>
+		<tr>
+            <th>Math.pow(x,y)</th>
+            <th>Returns x to the power of y where y will need to be specified</th>            
+        </tr>
+		<tr>
+            <th>Math.ceil(x)</th>
+            <th>Returns ceiling of x</th>            
+        </tr>
+		<tr>
+            <th>Math.round(x,y)</th>
+            <th>Returns rounded value of x</th>            
+        </tr>
+		<tr>
+            <th>Math.sqrt(x)</th>
+            <th>Returns square root of x</th>            
+        </tr>
+		
+		</tbody>
+</table>
+
+    </body>
+
+</html>
+<br><br><br><br><br><br>
+
+<div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#appId=181149845274306&amp;xfbml=1"></script><fb:like href="https://sites.google.com/site/plotmyfunction/" send="true" width="450" show_faces="true" font=""></fb:like>
+<br><br>
+<div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:comments href="https://sites.google.com/site/plotmyfunction/" num_posts="2" width="500"></fb:comments>
